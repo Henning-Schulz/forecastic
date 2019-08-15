@@ -1,0 +1,40 @@
+{
+    "instance": {
+        "instanceId": "${host}:forecastic:${port}",
+        "hostName": "${host}",
+        "app": "forecastic",
+        "ipAddr": "${host}",
+        "status": "UP",
+        "overriddenStatus": "UNKNOWN",
+        "port": {
+            "$": ${port},
+            "@enabled": "true"
+        },
+        "securePort": {
+            "$": 443,
+            "@enabled": "false"
+        },
+        "countryId": 1,
+        "dataCenterInfo": {
+            "@class": "com.netflix.appinfo.InstanceInfo$DefaultDataCenterInfo",
+            "name": "MyOwn"
+        },
+        "leaseInfo": {
+            "renewalIntervalInSecs": 30,
+            "durationInSecs": 90,
+            "registrationTimestamp": 0,
+            "lastRenewalTimestamp": 0,
+            "evictionTimestamp": 0,
+            "serviceUpTimestamp": 0
+        },
+        "metadata": {
+            "@class": "java.util.Collections$EmptyMap"
+        },
+        "homePageUrl": "http://${host}:${port}/",
+        "statusPageUrl": "http://${host}:${port}/__swagger__/",
+        "healthCheckUrl": "http://${host}:${port}/health",
+        "vipAddress": "forecastic",
+        "secureVipAddress": "forecastic",
+        "isCoordinatingDiscoveryServer": "false"
+    }
+}
