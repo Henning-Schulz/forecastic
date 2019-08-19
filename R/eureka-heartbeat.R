@@ -1,4 +1,5 @@
-# erueka-heartbeat.R
+# eureka-heartbeat.R
+#' @author Henning Schulz
 
 suppressWarnings(suppressMessages(library(optparse)))
 suppressWarnings(suppressMessages(library(httr)))
