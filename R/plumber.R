@@ -1,26 +1,31 @@
 # plumber.R
 
+logger <- Logger$new(name = "plumber API")
+
 #' Simple health endpoint
 #' @get /health
 function() {
   "Forecastic is up and running!"
 }
 
-#' Forecast the passed intensities
-#' @param foo part of the body
+#' Create and return an intensity forecast using the passed parameters
 #' @post /forecast
-function(req, app_id, tailoring, consider, forecast, approach, aggregation) {
-  message(str_c("Forecasting ",
-                app_id, ".[", tailoring,
-                "] data in range ", consider$from, " - ", consider$to,
-                " to range ", forecast$from, " - ", forecast$to,
-                " using ", approach,
-                " and ", aggregation, "..."))
+function(req, app_id, tailoring, ranges, ignored_variables, context, resolution, approach, aggregation) {
+  logger$info("Forecasting ", app_id, ".[", tailoring, "] to range ", min(ranges$from), " - ", max(ranges$to),
+                " using ", approach, " and ", aggregation, "...")
   
-  # TODO: list of timestamps + list of intensities per group + lists of comntext variables?
+  if (tolower(approach) == "telescope") {
+    forecaster <- TelescopeForecaster$new(
+      app_id = app_id, tailoring = tailoring,
+      ignored_variables = ignored_variables, resolution = resolution
+    )
+  } else if (tolower(approach) == "prophet") {
+    # TODO
+  }
   
-  list(
-    "timestamps" = forecast$from,
-    "0" = 42
-  )
+  forecaster$do_forecast(context = context, horizon = max(ranges$to))
+  
+  forecaster$forecast
+  
+  # TODO: aggregation
 }

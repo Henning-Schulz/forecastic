@@ -19,3 +19,7 @@ if (!require(tidyverse)) {
 if (!require(cronR)) {
   install.packages("cronR", repos = "http://cran.us.r-project.org")
 }
+
+if (!require(elasticsearchr)) {
+  install.packages("elasticsearchr", repos = "http://cran.us.r-project.org")
+}
