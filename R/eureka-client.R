@@ -1,4 +1,5 @@
 # eureka.R
+#' @author Henning Schulz
 
 library(R6)
 library(httr)

@@ -1,4 +1,5 @@
 # logger.R
+#' @author Henning Schulz
 
 library(R6)
 
