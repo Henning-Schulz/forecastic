@@ -28,11 +28,13 @@ function(app_id, tailoring, ranges, context, resolution, approach, aggregation) 
   
   forecaster$do_forecast(context = context_tibble, horizon = max(ranges$to))
   
+  filtered_forecast <- forecaster$range_forecast(ranges)
+  
   # TODO: aggregation
   
   logger$info("Returning forecast result for ", app_id, ".[", tailoring, "] with range ", min(ranges$from), " - ", max(ranges$to),
               ", ", approach, ", and ", aggregation, ".")
   
   # TODO: return aggregation result
-  forecaster$forecast
+  filtered_forecast
 }

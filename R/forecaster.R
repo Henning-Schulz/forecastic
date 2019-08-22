@@ -57,6 +57,17 @@ Forecaster <- R6Class("Forecaster", list(
   
   do_forecast = function(context, horizon) {
     stop("Not implemented!")
+  },
+  
+  range_forecast = function(ranges) {
+    ranges %>%
+      transpose() %>%
+      map(function(range) {
+        self$logger$info("Extracting range ", range$from, " - ", range$to)
+        self$forecast %>%
+          filter(timestamp >= range$from & timestamp <= range$to)
+      }) %>%
+      reduce(rbind)
   }
   
 ))
