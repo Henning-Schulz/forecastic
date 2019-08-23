@@ -7,6 +7,10 @@ library(stringr)
 library(cronR)
 library(lubridate)
 
+#'
+#' A simple Eureka client (de-) registering at a Eureka server.
+#' It will use a cron job to send the heartbeats.
+#'
 EurekaClient <- R6Class("EurekaClient", list(
   host = NULL,
   local_host = NULL,
@@ -16,6 +20,11 @@ EurekaClient <- R6Class("EurekaClient", list(
   cron_id = NULL,
   logger = Logger$new(name = "EurekaClient"),
   
+  #' Initializes the client.
+  #' 
+  #' @param eureka_host The host name of the Eureka server.
+  #' @param local_host The host name of the process to register.
+  #' @param local_port The port number of the process to register.
   initialize = function(eureka_host, local_host, local_port) {
     self$host <- eureka_host
     self$local_host <- local_host
@@ -26,6 +35,7 @@ EurekaClient <- R6Class("EurekaClient", list(
     self$cron_id <- str_c("eureka-heartbeat-", local_host, "-", local_port)
   },
   
+  #' Registers at the Eureka server.
   register = function() {
     self$logger$info("Registering at Eureka: ", self$host, "...")
     
@@ -50,6 +60,7 @@ EurekaClient <- R6Class("EurekaClient", list(
     }
   },
   
+  #' Unregisters from the Eureka server.
   unregister = function() {
     self$logger$info("Unregistering from Eureka: ", self$host, "...")
     

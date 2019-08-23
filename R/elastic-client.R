@@ -5,6 +5,17 @@ library(elasticsearchr)
 library(tidyverse)
 library(stringr)
 
+#' Reads the intensities from the elasticsearch.
+#' The result will be formatted as tibble with the following columns:
+#'   \code{timestamp} The timestamp in milliseconds
+#'   \code{intensity.<group>} The workload intensity (one column per group)
+#'   \code{<context_variable>} The values of a context variable (one column per variable / per value in the string case)
+#' The tibble holds the data as they are in the elasticsearch, i.e., can contain \code{NA} and missing values.
+#' 
+#' @param app_id The app-id to be used in the query.
+#' @param tailoring the tailoring to be used in the query.
+#' 
+#' @example read_intensities("my_app", "all")
 read_intensities <- function(app_id, tailoring) {
   raw_data <- elastic(cluster_url = str_c("http://", opt$elastic, ":9200"), index = str_c(app_id, ".", tailoring, ".intensity")) %search%
     query('{

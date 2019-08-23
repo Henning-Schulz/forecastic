@@ -1,6 +1,10 @@
 # utils.R
 #' @author Henning Schulz
 
+#' Transforms a JSON formatted context (provided as tibble) into a clean tibble
+#' with one column per context variable / value in the string case.
+#' 
+#' @param context_json The JSON formatted context.
 transform_context <- function(context_json) {
   if (is_empty(context_json)) {
     tibble(timestamp = double())
@@ -60,6 +64,13 @@ transform_context <- function(context_json) {
   }
 }
 
+#' Fills the missing values of a clean context tibble (formatted using \code{transform_context}).
+#' It will contain all timestamps in the provided ranges and all \code{NA}s will be replaced by 0.
+#' 
+#' @param context The context to be filled.
+#' @param from The start timestamp in milliseconds.
+#' @param to The end timestamp in milliseconds.
+#' @param resolution The distance between two timestamps in milliseconds.
 fill_context <- function(context, from, to, resolution) {
   tibble(timestamp = seq(from, to, resolution)) %>%
     left_join(context, by = "timestamp") %>%

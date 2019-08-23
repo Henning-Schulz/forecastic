@@ -9,10 +9,19 @@ library(e1071)
 library(sparklyr)
 library(tidyverse)
 
+#'
+#' Forecaster implementation using the telescope tool.
+#' 
 TelescopeForecaster <- R6Class("TelescopeForecaster", inherit = Forecaster, list(
   
   logger = Logger$new("TelescopeForecaster"),
   
+  #' Forecasts one intensity group.
+  #' 
+  #' @param group The group name as string.
+  #' @param past_context The past context as matrix (one context variable per column).
+  #' @param future_context The future context. Needs to have the same columns as \code{past_context}.
+  #' @param future_timestamps The future timestamps as vector. Needs to have the same length as \code{future_context}.
   forecast_group = function(group, past_context, future_context, future_timestamps) {
     self$logger$info("Forecasting group ", group, "...")
     
@@ -32,6 +41,7 @@ TelescopeForecaster <- R6Class("TelescopeForecaster", inherit = Forecaster, list
     )
   },
   
+  #'Does the forecast using the telescope tool.
   do_forecast = function(context, horizon) {
     self$logger$info("Forecasting the intensities...")
     

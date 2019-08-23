@@ -4,6 +4,9 @@
 library(R6)
 library(tidyverse)
 
+#'
+#' Abstract forecaster class. Can be extended by forecaster implementations.
+#' 
 Forecaster <- R6Class("Forecaster", list(
   
   logger = Logger$new("Forecaster"),
@@ -14,6 +17,12 @@ Forecaster <- R6Class("Forecaster", list(
   forecast = NULL,
   # TODO: plots etc.
   
+  #' Creates a new forecaster and initializes the past intensities by querying the elasticsearch.
+  #' 
+  #' @param app_id The app_id to be used for getting the intensities.
+  #' @param tailoring The tailoring to be used for getting the intensities.
+  #' @param context_variables The context variables to be considered. Should match to the variables of the future context.
+  #' @param resolution The time difference between two subsequent intensity values in milliseconds.
   initialize = function(app_id, tailoring, context_variables, resolution) {
     self$logger$info("Initializing data for forecasting...")
     
@@ -47,18 +56,25 @@ Forecaster <- R6Class("Forecaster", list(
       summarize(val = max(timestamp))
     self$end_past <- end_past$val
     
+    # replacing all missing values (intensities and context variables) with 0
     self$past_intensities <- tibble(timestamp = seq(start$val, end_past$val, resolution)) %>%
       left_join(intensities, by = "timestamp") %>%
-      fill(starts_with("intensity")) %>%
       replace(is.na(.), 0)
     
     self$logger$info("Initialization done.")
   },
   
+  #' Does the forecast. The implementation depends on the forecaster type.
+  #' 
+  #' @param context The future context to be considered.
+  #' @param horizon The timestamp in milliseconds to which the forecast should reach.
   do_forecast = function(context, horizon) {
     stop("Not implemented!")
   },
   
+  #' Gets the forecast in the provided ranges. Requires \code{do_forecast} to be called in advance.
+  #' 
+  #' @param ranges The ranges as data frame with columns \code{from} and \code{to}.
   range_forecast = function(ranges) {
     ranges %>%
       transpose() %>%
