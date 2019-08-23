@@ -41,7 +41,7 @@ TelescopeForecaster <- R6Class("TelescopeForecaster", inherit = Forecaster, list
     )
   },
   
-  #'Does the forecast using the telescope tool.
+  #' Does the forecast using the telescope tool.
   do_forecast = function(context, horizon) {
     self$logger$info("Forecasting the intensities...")
     

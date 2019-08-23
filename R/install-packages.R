@@ -45,6 +45,10 @@ if (!require(sparklyr)) {
   install.packages("sparklyr", repos = "http://cran.us.r-project.org")
 }
 
+if (!require(prophet)) {
+  install.packages("prophet", type = "source", repos = "http://cran.us.r-project.org")
+}
+
 source("telescope/telescope.R")
 source("telescope/cluster_periods.R")
 source("telescope/detect_anoms.R")

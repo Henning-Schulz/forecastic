@@ -23,7 +23,10 @@ function(app_id, tailoring, ranges, context, resolution, approach, aggregations)
       context_variables = context_tibble %>% select(-timestamp) %>% colnames()
     )
   } else if (tolower(approach) == "prophet") {
-    # TODO
+    forecaster <- ProphetForecaster$new(
+      app_id = app_id, tailoring = tailoring, resolution = resolution,
+      context_variables = context_tibble %>% select(-timestamp) %>% colnames()
+    )
   }
   
   forecaster$do_forecast(context = context_tibble, horizon = max(ranges$to))
