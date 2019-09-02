@@ -2,59 +2,49 @@
 #' @author Henning Schulz
 
 if (!require(plumber)) {
-  install.packages("plumber", repos = "http://cran.us.r-project.org")
+  install.packages("plumber", repos = "https://cloud.r-project.org/")
 }
 
 if (!require(optparse)) {
-  install.packages("optparse", repos = "http://cran.us.r-project.org")
+  install.packages("optparse", repos = "https://cloud.r-project.org/")
 }
 
 if (!require(jsonlite)) {
-  install.packages("jsonlite", repos = "http://cran.us.r-project.org")
+  install.packages("jsonlite", repos = "https://cloud.r-project.org/")
 }
 
 if (!require(tidyverse)) {
-  install.packages("tidyverse", repos = "http://cran.us.r-project.org")
+  install.packages("tidyverse", repos = "https://cloud.r-project.org/")
 }
 
 if (!require(cronR)) {
-  install.packages("cronR", repos = "http://cran.us.r-project.org")
+  install.packages("cronR", repos = "https://cloud.r-project.org/")
 }
 
 if (!require(elasticsearchr)) {
-  install.packages("elasticsearchr", repos = "http://cran.us.r-project.org")
+  install.packages("elasticsearchr", repos = "https://cloud.r-project.org/")
 }
 
 if (!require(xgboost)) {
-  install.packages("xgboost", repos = "http://cran.us.r-project.org")
+  install.packages("xgboost", repos = "https://cloud.r-project.org/")
 }
 
 if (!require(cluster)) {
-  install.packages("cluster", repos = "http://cran.us.r-project.org")
+  install.packages("cluster", repos = "https://cloud.r-project.org/")
 }
 
 if (!require(forecast)) {
-  install.packages("forecast", repos = "http://cran.us.r-project.org")
+  install.packages("forecast", repos = "https://cloud.r-project.org/")
 }
 
 if (!require(e1071)) {
-  install.packages("e1071", repos = "http://cran.us.r-project.org")
+  install.packages("e1071", repos = "https://cloud.r-project.org/")
 }
 
 if (!require(sparklyr)) {
-  install.packages("sparklyr", repos = "http://cran.us.r-project.org")
+  install.packages("sparklyr", repos = "https://cloud.r-project.org/")
 }
 
 if (!require(prophet)) {
-  install.packages("prophet", type = "source", repos = "http://cran.us.r-project.org")
+  install.packages("prophet", type = "source", repos = "https://cloud.r-project.org/")
 }
-
-source("telescope/telescope.R")
-source("telescope/cluster_periods.R")
-source("telescope/detect_anoms.R")
-source("telescope/fitting_models.R")
-source("telescope/frequency.R")
-source("telescope/outlier.R")
-source("telescope/telescope_Utils.R")
-source("telescope/vec_anom_detection.R")
-source("telescope/xgb.R")

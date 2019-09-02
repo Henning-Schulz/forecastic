@@ -9,6 +9,16 @@ library(e1071)
 library(sparklyr)
 library(tidyverse)
 
+source("telescope/telescope.R")
+source("telescope/cluster_periods.R")
+source("telescope/detect_anoms.R")
+source("telescope/fitting_models.R")
+source("telescope/frequency.R")
+source("telescope/outlier.R")
+source("telescope/telescope_Utils.R")
+source("telescope/vec_anom_detection.R")
+source("telescope/xgb.R")
+
 #'
 #' Forecaster implementation using the telescope tool.
 #' 
