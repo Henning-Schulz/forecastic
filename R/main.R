@@ -12,6 +12,7 @@ source("R/forecaster.R")
 source("R/telescope-forecaster.R")
 source("R/prophet-forecaster.R")
 source("R/aggregation.R")
+source("R/adjustment.R")
 
 library(plumber)
 library(optparse)

@@ -11,9 +11,9 @@ function() {
 
 #' Create and return an intensity forecast using the passed parameters
 #' @post /forecast
-function(app_id, tailoring, ranges, context, resolution, approach, aggregations) {
+function(app_id, tailoring, ranges, context, resolution, approach, aggregation, adjustments) {
   logger$info("Forecasting ", app_id, ".[", tailoring, "] to range ", min(ranges$from), " - ", max(ranges$to),
-                " using ", approach, " and [", paste(aggregations, collapse = ", "), "]...")
+                " using ", approach, "aggregation ", aggregation$type, " and adjustments [", paste(adjustments$type, collapse = ", "), "]...")
   
   context_tibble <- transform_context(context %>% as_tibble())
   
@@ -32,9 +32,10 @@ function(app_id, tailoring, ranges, context, resolution, approach, aggregations)
   forecaster$do_forecast(context = context_tibble, horizon = max(ranges$to))
   
   range_forecast <- forecaster$range_forecast(ranges)
-  aggregated_forecast <- aggregate_workload(range_forecast, aggregations)
+  aggregated_forecast <- aggregate_workload(range_forecast, aggregation)
+  result <- adjust_and_finalize_workload(aggregated_forecast, adjustments)
   
   logger$info("Returning forecast result for ", app_id, ".[", tailoring, "].")
   
-  aggregated_forecast
+  result
 }

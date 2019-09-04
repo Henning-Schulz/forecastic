@@ -10,26 +10,10 @@ aggregation_logger <- Logger$new("aggregation")
 #' 
 #' @param intensities The (forecasted) intensities to be aggregated as tibble. It is required that the
 #'                    first column is \code{timestamp} and the remaining ones are intensities.
-#' @param aggregations The aggregations to be used as vector.
-aggregate_workload <- function(intensities, aggregations) {
-  aggregation_logger$info("Aggregating using ", paste(aggregations, collapse = ", "))
+#' @param aggregation The aggregation to be used as vector.
+aggregate_workload <- function(intensities, aggregation) {
+  aggregation_logger$info("Aggregating using ", aggregation$type)
   
-  for (agg in aggregations) {
-    source(str_c("aggregations/", agg, ".R"))
-    
-    if (aggregation_requires_behavior) {
-      # TODO
-      stop("Aggregation with behavior is not implemented!")
-    } else {
-      behavior <- NULL
-    }
-    
-    intensities <- do_aggregation(intensities, behavior)
-  }
-  
-  formatted_intensities <- intensities %>%
-    mutate(timestamp = timestamp - first(timestamp)) %>%
-    rename_at(vars(starts_with("intensity")), funs(str_sub(., start = 11)))
-  
-  list(intensities = formatted_intensities)
+  source(str_c("aggregations/", aggregation, ".R"))
+  do_aggregation(intensities, behavior, aggregation$properties)
 }

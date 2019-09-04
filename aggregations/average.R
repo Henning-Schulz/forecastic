@@ -1,8 +1,6 @@
 # average.R
 
-aggregation_requires_behavior <- FALSE
-
-do_aggregation <- function(intensities, behavior = NULL) {
+do_aggregation <- function(intensities, behavior = NULL, properties = NULL) {
   intensities %>%
     mutate(sum = rowSums(.[2:ncol(intensities)])) %>%
     mutate(
