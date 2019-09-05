@@ -12,8 +12,8 @@ function() {
 #' Create and return an intensity forecast using the passed parameters
 #' @post /forecast
 function(app_id, tailoring, ranges, context, resolution, approach, aggregation, adjustments) {
-  logger$info("Forecasting ", app_id, ".[", tailoring, "] to range ", min(ranges$from), " - ", max(ranges$to),
-                " using ", approach, "aggregation ", aggregation$type, " and adjustments [", paste(adjustments$type, collapse = ", "), "]...")
+  logger$info("Forecasting ", app_id, ".[", tailoring, "] to range ", min(ranges$from), " - ", max(ranges$to), " in resolution ", resolution,
+                " using ", approach, ", aggregation ", aggregation$type, " and adjustments [", paste(adjustments$type, collapse = ", "), "]...")
   
   context_tibble <- transform_context(context %>% as_tibble())
   

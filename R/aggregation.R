@@ -14,6 +14,6 @@ aggregation_logger <- Logger$new("aggregation")
 aggregate_workload <- function(intensities, aggregation) {
   aggregation_logger$info("Aggregating using ", aggregation$type)
   
-  source(str_c("aggregations/", aggregation, ".R"))
+  source(str_c("aggregations/", aggregation$type, ".R"))
   do_aggregation(intensities, behavior, aggregation$properties)
 }
