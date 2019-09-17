@@ -15,6 +15,7 @@ EurekaClient <- R6Class("EurekaClient", list(
   host = NULL,
   local_host = NULL,
   local_port = NULL,
+  name = NULL,
   template_file = "resources/eureka-register.json",
   cron_cmd = NULL,
   cron_id = NULL,
@@ -25,9 +26,11 @@ EurekaClient <- R6Class("EurekaClient", list(
   #' @param eureka_host The host name of the Eureka server.
   #' @param local_host The host name of the process to register.
   #' @param local_port The port number of the process to register.
-  initialize = function(eureka_host, local_host, local_port) {
+  #' @param name The name of the instance.
+  initialize = function(eureka_host, local_host, local_port, name = local_host) {
     self$host <- eureka_host
     self$local_host <- local_host
+    self$name <- name
     self$local_port <- as.character(local_port)
     self$cron_cmd <- cron_rscript(rscript = str_c(getwd(), "/R/eureka-heartbeat.R"),
                                   rscript_log = str_c(getwd(), "/logs/eureka-heartbeat.log"),
@@ -46,6 +49,7 @@ EurekaClient <- R6Class("EurekaClient", list(
     body <- readChar(self$template_file, file.info(self$template_file)$size)
     body <- str_replace_all(body, "\\$\\{host\\}", self$local_host)
     body <- str_replace_all(body, "\\$\\{port\\}", self$local_port)
+    body <- str_replace_all(body, "\\$\\{name\\}", self$name)
     
     response <- POST(url = str_c("http://", self$host, ":8761/eureka/apps/forecastic"), body = body,
                      content_type("application/json"))

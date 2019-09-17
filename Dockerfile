@@ -5,4 +5,6 @@ COPY aggregations ./aggregations
 COPY telescope ./telescope
 COPY resources ./resources
 
-ENTRYPOINT Rscript R/main.R --host 0.0.0.0 --port 80 --eureka eureka --elastic elasticsearch
+RUN wget https://raw.githubusercontent.com/vishnubob/wait-for-it/master/wait-for-it.sh; chmod +x wait-for-it.sh
+
+ENTRYPOINT ./wait-for-it.sh -t 120 ${EUREKA:-eureka}:8761 -- Rscript R/main.R --host $(ip address | grep inet.*eth0 | sed -r 's/.*inet ([0-9\.]+).*/\1/') --port 80 --name forecastic --eureka ${EUREKA:-eureka} --elastic ${ELASTIC:-elasticsearch}

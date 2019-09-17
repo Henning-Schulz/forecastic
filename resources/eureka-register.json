@@ -1,6 +1,6 @@
 {
     "instance": {
-        "instanceId": "${host}:forecastic:${port}",
+        "instanceId": "${name}:forecastic:${port}",
         "hostName": "${host}",
         "app": "forecastic",
         "ipAddr": "${host}",

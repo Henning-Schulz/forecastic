@@ -23,9 +23,11 @@ option_list <- list(
   make_option(c("--port"), type = "integer", default = 7955,
               help = "The port of the started Rest API."),
   make_option(c("--host"), type = "character", default = "127.0.0.1",
-              help = "The host name or IP of the started Rest API."),
+              help = "The host name or IP to be used to access the Rest API."),
   make_option(c("--eureka"), type = "character", default = FALSE,
               help = "The host name or IP of the Eureka server. Use F for not registering at Eureka (the default)."),
+  make_option(c("--name"), type = "character", default = "127.0.0.1",
+              help = "The name to use fore registering at Eureka."),
   make_option(c("--elastic"), type = "character", default = "localhost",
               help = "The host name or IP of the elasticsearch database.")
 )
@@ -38,7 +40,7 @@ pr <- plumber::plumb("R/plumber.R")
 eureka_set <- as.logical(opt$eureka)
 
 if (is.na(eureka_set) | eureka_set)  {
-  eureka <- EurekaClient$new(eureka_host = opt$eureka, local_host = opt$host, local_port = opt$port)
+  eureka <- EurekaClient$new(eureka_host = opt$eureka, local_host = opt$host, local_port = opt$port, name = opt$name)
   
   pr$registerHook("exit", eureka$unregister)
   
@@ -47,4 +49,10 @@ if (is.na(eureka_set) | eureka_set)  {
   generic_logger$info("Not using Eureka")
 }
 
-pr$run(port = opt$port, host = opt$host, swagger = TRUE)
+if (opt$host == "127.0.0.1") {
+  plumber_ip <- "127.0.0.1"
+} else {
+  plumber_ip <- "0.0.0.0"
+}
+
+pr$run(port = opt$port, host = plumber_ip, swagger = TRUE)
