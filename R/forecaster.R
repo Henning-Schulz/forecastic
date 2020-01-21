@@ -61,7 +61,7 @@ Forecaster <- R6Class("Forecaster",
       self$end_past <- end_past$val
       
       # replacing all missing values (intensities and context variables) with 0
-      self$past_intensities <- tibble(timestamp = seq(start$val, end_past$val, resolution)) %>%
+      self$past_intensities <- tibble(timestamp = seq(start$val, end_past$val, as.double(resolution))) %>% # as.double prevents integer overflow
         left_join(intensities, by = "timestamp") %>%
         replace(is.na(.), 0)
       

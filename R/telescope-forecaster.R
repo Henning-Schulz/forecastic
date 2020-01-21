@@ -47,6 +47,8 @@ TelescopeForecaster <- R6Class("TelescopeForecaster", inherit = Forecaster,
                                        future.covar = future_context)
       }
       
+      private$logger$info("Forecasting of group ", group, " done.")
+      
       tibble(
         timestamp = future_timestamps,
         !!group := forecast$mean

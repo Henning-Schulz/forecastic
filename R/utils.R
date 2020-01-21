@@ -72,7 +72,7 @@ transform_context <- function(context_json) {
 #' @param to The end timestamp in milliseconds.
 #' @param resolution The distance between two timestamps in milliseconds.
 fill_context <- function(context, from, to, resolution) {
-  tibble(timestamp = seq(from, to, resolution)) %>%
+  tibble(timestamp = seq(from, to, as.double(resolution))) %>% # as.double prevents integer overflow
     left_join(context, by = "timestamp") %>%
     replace(is.na(.), 0)
 }

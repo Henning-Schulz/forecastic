@@ -28,3 +28,22 @@ read_intensities <- function(app_id, tailoring) {
     left_join(transform_context(raw_data), by = "timestamp") %>%
     arrange(timestamp)
 }
+
+#' Gets the latest timestamp stored in the elasticsearch for the passed app-id and tailoring.
+#' 
+#' @param app_id The app-id to be used in the query.
+#' @param tailoring the tailoring to be used in the query.
+#' 
+#' @example get_latest_timestamp("my_app", "all")
+get_latest_timestamp <- function(app_id, tailoring) {
+  elastic(cluster_url = str_c("http://", opt$elastic, ":9200"), index = str_c(app_id, ".", tailoring, ".intensity")) %search%
+    (
+      query('{
+            "range": { "timestamp": { "gte": 1 } }
+      }', size = 0) +
+      aggs('{
+           "max_timestamp" : { "max" : { "field" : "timestamp" } }
+      }')
+    ) %>%
+    .$value
+}
