@@ -27,11 +27,12 @@ Forecaster <- R6Class("Forecaster",
     #' @param tailoring The tailoring to be used for getting the intensities.
     #' @param context_variables The context variables to be considered. Should match to the variables of the future context.
     #' @param resolution The time difference between two subsequent intensity values in milliseconds.
-    initialize = function(app_id, tailoring, context_variables, resolution) {
+    #' @param perspective The timestamp to be considered as the latest 'past' timestamp.
+    initialize = function(app_id, tailoring, context_variables, resolution, perspective) {
       private$logger$info("Initializing data for forecasting...")
       
       # read intensities from elasticsearch
-      intensities <- read_intensities(app_id, tailoring)
+      intensities <- read_intensities(app_id, tailoring, perspective)
       
       # check resolution
       self$resolution <- resolution

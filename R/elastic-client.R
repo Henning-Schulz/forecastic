@@ -16,11 +16,15 @@ library(stringr)
 #' @param tailoring the tailoring to be used in the query.
 #' 
 #' @example read_intensities("my_app", "all")
-read_intensities <- function(app_id, tailoring) {
+read_intensities <- function(app_id, tailoring, perspective = NULL) {
+  if (is.null(perspective)) {
+    filtering_query = query('{ "match_all": {} }')
+  } else {
+    filtering_query = query(sprintf('{ "range": { "timestamp": { "lte": %s } } }', perspective))
+  }
+  
   raw_data <- elastic(cluster_url = str_c("http://", opt$elastic, ":9200"), index = str_c(app_id, ".", tailoring, ".intensity")) %search%
-    query('{
-             "match_all": {}
-           }') %>%
+    filtering_query %>%
     as_tibble()
   
   intensities <- raw_data %>%

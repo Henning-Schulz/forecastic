@@ -20,6 +20,8 @@ ProphetForecaster <- R6Class("ProphetForecaster", inherit = Forecaster,
     #' @param future The future data Needs to have the same columns as \code{past} (except for intensity).
     #' @param context_variables The context variables occurring in \code{past} and \code{future}.
     forecast_group = function(group, past, future, context_variables) {
+      private$logger$info("Forecasting group ", group, "...")
+      
       m <- prophet()
       
       for (variable in context_variables) {

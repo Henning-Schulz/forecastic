@@ -11,6 +11,7 @@ source("R/elastic-client.R")
 source("R/forecaster.R")
 source("R/telescope-forecaster.R")
 source("R/prophet-forecaster.R")
+source("R/perfect-forecaster.R")
 source("R/aggregation.R")
 source("R/adjustment.R")
 
