@@ -28,11 +28,20 @@ Forecaster <- R6Class("Forecaster",
     #' @param context_variables The context variables to be considered. Should match to the variables of the future context.
     #' @param resolution The time difference between two subsequent intensity values in milliseconds.
     #' @param perspective The timestamp to be considered as the latest 'past' timestamp.
-    initialize = function(app_id, tailoring, context_variables, resolution, perspective) {
+    #' @param forecast_total Whether the intensities should be summarized and foreasted as total. Defaults to FALSE.
+    initialize = function(app_id, tailoring, context_variables, resolution, perspective, forecast_total = F) {
       private$logger$info("Initializing data for forecasting...")
       
       # read intensities from elasticsearch
       intensities <- read_intensities(app_id, tailoring, perspective)
+      
+      if (forecast_total) {
+        private$logger$info("Summing the intensities to a total one.")
+        
+        intensities <- intensities %>%
+          mutate(total__ = rowSums(select(., starts_with("intensity")), na.rm = T)) %>%
+          select(-starts_with("intensity"), intensity.total__ = total__)
+      }
       
       # check resolution
       self$resolution <- resolution
