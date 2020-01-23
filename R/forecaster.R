@@ -56,7 +56,7 @@ Forecaster <- R6Class("Forecaster",
         stop("The passed resolution ", resolution, " ms is not a multiple of the detected resolution ", min_resolution, " ms")
       }
       
-      private$logger$info("Using context variables ", paste(context_variables, collapse = ", "))
+      private$logger$info("Using context variables [", paste(context_variables, collapse = ", "), "]")
       
       intensities <- intensities %>%
         select(timestamp, starts_with("intensity"), one_of(context_variables))

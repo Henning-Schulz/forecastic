@@ -12,7 +12,7 @@ aggregation_logger <- Logger$new("aggregation")
 #'                    first column is \code{timestamp} and the remaining ones are intensities.
 #' @param aggregation The aggregation to be used as vector.
 aggregate_workload <- function(intensities, aggregation) {
-  aggregation_logger$info("Aggregating using ", aggregation$type)
+  aggregation_logger$info("Aggregating using '", aggregation$type, "'")
   
   source(str_c("aggregations/", aggregation$type, ".R"))
   do_aggregation(intensities, behavior, aggregation$properties)

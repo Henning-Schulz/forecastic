@@ -12,7 +12,7 @@ adjustment_logger <- Logger$new("adjustment.R")
 #'                    first column is \code{timestamp} and the remaining ones are intensities.
 #' @param adjustments The aggregations to be used as adjustments
 adjust_and_finalize_workload <- function(intensities, adjustments) {
-  adjustment_logger$info("Adjusting using ", paste(adjustments, collapse = ", "))
+  adjustment_logger$info("Adjusting using [", paste(adjustments, collapse = ", "), "]")
   
   behavior <- NULL
   
@@ -38,7 +38,7 @@ adjust_and_finalize_workload <- function(intensities, adjustments) {
   
   formatted_intensities <- intensities %>%
     mutate(timestamp = timestamp - first(timestamp)) %>%
-    rename_at(vars(starts_with("intensity")), funs(str_sub(., start = 11)))
+    rename_at(vars(starts_with("intensity")), list(~ str_sub(., start = 11)))
   
   list(intensities = formatted_intensities)
 }

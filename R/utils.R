@@ -28,7 +28,7 @@ transform_context <- function(context_json) {
       numeric_context <- context_json %>%
         select(timestamp, context.numeric) %>%
         mutate_if(is.list, map, as_data_frame) %>%
-        unnest() %>%
+        unnest(cols = c(context.numeric)) %>%
         spread(key = name, value = value)
       
       clean_context <- clean_context %>%
@@ -39,7 +39,7 @@ transform_context <- function(context_json) {
       string_context <- context_json %>%
         select(timestamp, context.string) %>%
         mutate_if(is.list, map, as_data_frame) %>%
-        unnest() %>%
+        unnest(cols = c(context.string)) %>%
         unite("var", name, value, sep = ".") %>%
         mutate(tmp = 1) %>%
         spread(key = var, value = tmp)
@@ -52,7 +52,7 @@ transform_context <- function(context_json) {
       boolean_context <- context_json %>%
         select(timestamp, context.boolean) %>%
         mutate_if(is.list, map, as_data_frame) %>%
-        unnest() %>%
+        unnest(cols = c(context.boolean)) %>%
         mutate(tmp = 1) %>%
         spread(key = value, value = tmp)
       

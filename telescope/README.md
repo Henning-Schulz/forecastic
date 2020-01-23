@@ -1,1 +1,0 @@
-This is a slightly adjusted fork of the [Telescope](https://github.com/DescartesResearch/telescope) forecasting tool, under license of the Descartes Research Group at the University of Würzburg, Chair of Software Engineering. The changes comprise multivariate forecasting using covariates that are passed to the forecaster.

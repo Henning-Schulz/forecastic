@@ -1,23 +1,8 @@
 # telescope-forecaster.R
 #' @author Henning Schulz
 
-library(R6)
-library(xgboost)
-library(cluster)
-library(forecast)
-library(e1071)
-library(sparklyr)
+library(telescope)
 library(tidyverse)
-
-source("telescope/telescope.R")
-source("telescope/cluster_periods.R")
-source("telescope/detect_anoms.R")
-source("telescope/fitting_models.R")
-source("telescope/frequency.R")
-source("telescope/outlier.R")
-source("telescope/telescope_Utils.R")
-source("telescope/vec_anom_detection.R")
-source("telescope/xgb.R")
 
 #'
 #' Forecaster implementation using the telescope tool.
@@ -40,11 +25,11 @@ TelescopeForecaster <- R6Class("TelescopeForecaster", inherit = Forecaster,
       tvp <- self$past_intensities[[group]]
       
       if (is_empty(past_context)) {
-        forecast <- telescope.forecast(tvp = tvp, horizon = length(future_timestamps))
+        forecast <- telescope.forecast(tvp, horizon = length(future_timestamps))
       } else {
-        forecast <- telescope.forecast(tvp = tvp, horizon = length(future_timestamps),
-                                       hist.covar = past_context,
-                                       future.covar = future_context)
+        forecast <- telescope.forecast(tvp, horizon = length(future_timestamps),
+                                       train.covariates = past_context,
+                                       future.covariates = future_context)
       }
       
       private$logger$info("Forecasting of group ", group, " done.")

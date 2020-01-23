@@ -42,7 +42,7 @@ function(app_id, tailoring, perspective, ranges, forecast_total, context, resolu
     forecaster <- PerfectForecaster$new(
       app_id = app_id, tailoring = tailoring, resolution = resolution,
       context_variables = context_tibble %>% select(-timestamp) %>% colnames(),
-      forecast_total
+      horizon, forecast_total
     )
   } else {
     stop("Unknown forecast approach: ", approach)

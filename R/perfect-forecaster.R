@@ -14,8 +14,8 @@ PerfectForecaster <- R6Class("PerfectForecaster", inherit = Forecaster,
   public = list(
     
     #' Constructor ignoring any perspective, as it is irrelevant for this type of forecaster.
-    initialize = function(app_id, tailoring, context_variables, resolution, forecast_total = F) {
-      super$initialize(app_id, tailoring, context_variables, resolution, NULL, forecast_total)
+    initialize = function(app_id, tailoring, context_variables, resolution, horizon, forecast_total = F) {
+      super$initialize(app_id, tailoring, context_variables, resolution, horizon, forecast_total)
     },
     
     #' Extracts and formats the past intensities.
