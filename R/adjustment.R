@@ -37,7 +37,6 @@ adjust_and_finalize_workload <- function(intensities, adjustments) {
   }
   
   formatted_intensities <- intensities %>%
-    mutate(timestamp = timestamp - first(timestamp)) %>%
     rename_at(vars(starts_with("intensity")), list(~ str_sub(., start = 11)))
   
   list(intensities = formatted_intensities)

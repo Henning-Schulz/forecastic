@@ -36,3 +36,7 @@ if (!require(telescope)) {
 if (!require(prophet)) {
   install.packages("prophet", type = "source", repos = "https://cloud.r-project.org/")
 }
+
+if (!require(tibbletime)) {
+  install.packages("tibbletime", type = "source", repos = "https://cloud.r-project.org/")
+}

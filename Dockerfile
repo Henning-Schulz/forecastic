@@ -1,4 +1,4 @@
-FROM continuityproject/forecastic-base:0.2.0
+FROM continuityproject/forecastic-base:0.3.0
 
 COPY R ./R
 COPY aggregations ./aggregations
