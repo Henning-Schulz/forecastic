@@ -11,12 +11,16 @@ function() {
 
 #' Create and return an intensity forecast using the passed parameters
 #' @post /forecast
-function(app_id, tailoring, perspective, ranges, forecast_total, context, resolution, approach, aggregation, adjustments) {
+function(app_id, tailoring, perspective, ranges, forecast_total, context, context_variables, resolution, approach, aggregation, adjustments) {
   logger$info("Forecasting ", app_id, ".[", tailoring, "] with perspective ", perspective, " to range ", min(ranges$from), " - ", max(ranges$to),
               " in resolution ", resolution, " with forecast_total = ", forecast_total,
               " using ", approach, " forecaster, aggregation ", aggregation$type, " and adjustments [", paste(adjustments$type, collapse = ", "), "]...")
   
   context_tibble <- transform_context(context %>% as_tibble())
+  
+  if (is.null(context_variables)) {
+    context_variables <- context_tibble %>% select(-timestamp) %>% colnames()
+  }
   
   latest_timestamp <- min(get_latest_timestamp(app_id, tailoring), perspective, na.rm = TRUE)
   horizon <- max(ranges$to)
@@ -29,19 +33,19 @@ function(app_id, tailoring, perspective, ranges, forecast_total, context, resolu
   if (tolower(approach) == "telescope") {
     forecaster <- TelescopeForecaster$new(
       app_id = app_id, tailoring = tailoring, resolution = resolution,
-      context_variables = context_tibble %>% select(-timestamp) %>% colnames(),
+      context_variables = context_variables,
       perspective, forecast_total
     )
   } else if (tolower(approach) == "prophet") {
     forecaster <- ProphetForecaster$new(
       app_id = app_id, tailoring = tailoring, resolution = resolution,
-      context_variables = context_tibble %>% select(-timestamp) %>% colnames(),
+      context_variables = context_variables,
       perspective, forecast_total
     )
   } else if (tolower(approach) == "perfect") {
     forecaster <- PerfectForecaster$new(
       app_id = app_id, tailoring = tailoring, resolution = resolution,
-      context_variables = context_tibble %>% select(-timestamp) %>% colnames(),
+      context_variables = context_variables,
       horizon, forecast_total
     )
   } else {
