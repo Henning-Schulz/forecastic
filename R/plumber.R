@@ -16,7 +16,7 @@ function(app_id, tailoring, perspective, ranges, forecast_total, context, contex
               " in resolution ", resolution, " with forecast_total = ", forecast_total,
               " using ", approach, " forecaster, aggregation ", aggregation$type, " and adjustments [", paste(adjustments$type, collapse = ", "), "]...")
   
-  context_tibble <- transform_context(context %>% as_tibble())
+  context_tibble <- transform_context(context %>% jsonlite::flatten() %>% as_tibble())
   
   if (is.null(context_variables)) {
     context_variables <- context_tibble %>% select(-timestamp) %>% colnames()

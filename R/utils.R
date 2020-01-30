@@ -9,56 +9,48 @@ transform_context <- function(context_json) {
   if (is_empty(context_json)) {
     tibble(timestamp = double())
   } else {
+    context_json <- context_json %>%
+      rename_at(vars(starts_with("context.")), list(~ str_sub(., start = 9)))
+    
+    message("Transforming numeric...")
+    
     clean_context <- context_json %>%
-      select(timestamp)
+      select(timestamp, starts_with("numeric")) %>%
+      rename_at(vars(starts_with("numeric")), list(~ str_sub(., start = 9)))
     
-    if ("numeric" %in% colnames(context_json)) {
-      context_json <- context_json %>% rename(context.numeric = numeric)
-    }
-    
-    if ("string" %in% colnames(context_json)) {
-      context_json <- context_json %>% rename(context.string = string)
-    }
-    
-    if ("boolean" %in% colnames(context_json)) {
-      context_json <- context_json %>% rename(context.boolean = boolean)
-    }
-    
-    if ("context.numeric" %in% colnames(context_json)) {
-      numeric_context <- context_json %>%
-        select(timestamp, context.numeric) %>%
-        mutate_if(is.list, map, as_data_frame) %>%
-        unnest(cols = c(context.numeric)) %>%
-        spread(key = name, value = value)
+    if (context_json %>% select(starts_with("string")) %>% ncol() > 0) {
+      message("Transforming string...")
       
-      clean_context <- clean_context %>%
-        left_join(numeric_context, by = "timestamp")
-    }
-    
-    if ("context.string" %in% colnames(context_json)) {
       string_context <- context_json %>%
-        select(timestamp, context.string) %>%
-        mutate_if(is.list, map, as_data_frame) %>%
-        unnest(cols = c(context.string)) %>%
+        select(timestamp, starts_with("string")) %>%
+        rename_at(vars(starts_with("string")), list(~ str_sub(., start = 8))) %>%
+        gather(-timestamp, key = "name", value = "value") %>%
+        drop_na() %>%
         unite("var", name, value, sep = ".") %>%
         mutate(tmp = 1) %>%
         spread(key = var, value = tmp)
       
-      clean_context <- clean_context %>%
-        left_join(string_context, by = "timestamp")
+      if (string_context %>% nrow() > 0) {
+        clean_context <- clean_context %>%
+          left_join(string_context, by = "timestamp")
+      }
     }
     
-    if ("context.boolean" %in% colnames(context_json)) {
+    if ("boolean" %in% colnames(context_json)) {
+      message("Transforming boolean...")
+      
       boolean_context <- context_json %>%
-        select(timestamp, context.boolean) %>%
+        select(timestamp, boolean) %>%
         mutate_if(is.list, map, as_data_frame) %>%
-        unnest(cols = c(context.boolean)) %>%
+        unnest_legacy() %>% # legacy is faster
         mutate(tmp = 1) %>%
         spread(key = value, value = tmp)
       
       clean_context <- clean_context %>%
         left_join(boolean_context, by = "timestamp")
     }
+    
+    message("Transformation done.")
     
     clean_context
   }

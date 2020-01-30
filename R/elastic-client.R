@@ -29,6 +29,7 @@ read_intensities <- function(app_id, tailoring, perspective = NULL) {
   
   intensities <- raw_data %>%
     select(timestamp, starts_with("intensity")) %>%
+    arrange(timestamp) %>%
     left_join(transform_context(raw_data), by = "timestamp") %>%
     arrange(timestamp)
 }
