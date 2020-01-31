@@ -18,7 +18,7 @@ function(app_id, tailoring, perspective, ranges, forecast_total, context, contex
   
   context_tibble <- transform_context(context %>% jsonlite::flatten() %>% as_tibble())
   
-  if (is.null(context_variables)) {
+  if (is.null(context_variables) || length(context_variables) == 0) {
     context_variables <- context_tibble %>% select(-timestamp) %>% colnames()
   }
   
