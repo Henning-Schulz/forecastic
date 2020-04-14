@@ -15,6 +15,8 @@ Forecaster <- R6Class("Forecaster",
                       
   public = list(
     
+    app_id = NULL,
+    tailoring = NULL,
     past_intensities = NULL,
     end_past = NULL,
     resolution = NULL,
@@ -31,6 +33,9 @@ Forecaster <- R6Class("Forecaster",
     #' @param forecast_total Whether the intensities should be summarized and foreasted as total. Defaults to FALSE.
     initialize = function(app_id, tailoring, context_variables, resolution, perspective, forecast_total = F) {
       private$logger$info("Initializing data for forecasting...")
+      
+      self$app_id <- app_id
+      self$tailoring <- tailoring
       
       # read intensities from elasticsearch
       intensities <- read_intensities(app_id, tailoring, perspective)

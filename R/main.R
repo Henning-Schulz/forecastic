@@ -30,7 +30,9 @@ option_list <- list(
   make_option(c("--name"), type = "character", default = "127.0.0.1",
               help = "The name to use fore registering at Eureka."),
   make_option(c("--elastic"), type = "character", default = "localhost",
-              help = "The host name or IP of the elasticsearch database.")
+              help = "The host name or IP of the elasticsearch database."),
+  make_option(c("--plotdir"), type = "character", default = FALSE,
+              help = "A directory where to store plots vizualizing the forecasts. Use F for not storing any plots (the default).")
 )
 
 opt_parser = OptionParser(option_list = option_list)

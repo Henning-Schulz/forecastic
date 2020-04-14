@@ -19,7 +19,8 @@ ProphetForecaster <- R6Class("ProphetForecaster", inherit = Forecaster,
     #' @param past The past data as data frame (columns \code{ds}, one per group intensity, one per context variable).
     #' @param future The future data Needs to have the same columns as \code{past} (except for intensity).
     #' @param context_variables The context variables occurring in \code{past} and \code{future}.
-    forecast_group = function(group, past, future, context_variables) {
+    #' @param plot_dir A directory to store the forecast plot. Not storing the plot if it is \code{NULL} or \code{NA}.
+    forecast_group = function(group, past, future, context_variables, plot_dir = NULL) {
       private$logger$info("Forecasting group ", group, "...")
       
       m <- prophet()
@@ -31,8 +32,15 @@ ProphetForecaster <- R6Class("ProphetForecaster", inherit = Forecaster,
       m <- fit.prophet(m, past %>% select(ds, y = !!group, one_of(context_variables)))
       forecast <- predict(m, future)
       
-      # plot(m, forecast)
-      # prophet_plot_components(m, forecast)
+      if (!is.na(plot_dir) && !is.null(plot_dir)) {
+        plot_file <- file.path(plot_dir, str_c(group, ".pdf"))
+        private$logger$info("Storing forecasting plots to ", plot_file, ".")
+        
+        pdf(file = plot_file, width = 11.35, height = 6.88)
+        print(plot(m, forecast))
+        prophet_plot_components(m, forecast)
+        dev.off()
+      }
       
       forecast %>%
         select(
@@ -77,6 +85,18 @@ ProphetForecaster <- R6Class("ProphetForecaster", inherit = Forecaster,
         select(-timestamp)
       
       # forecast each group and join the results
+      plotdir_set <- as.logical(opt$plotdir)
+      
+      if (is.na(plotdir_set) | plotdir_set) {
+        plot_dir <- file.path(
+          opt$plotdir,
+          str_c("prophet-", self$app_id, ".", self$tailoring, "-", format(lubridate::now(), format = "%Y%m%d-%H%M%S"))
+        )
+        mkdirs(plot_dir)
+      } else {
+        plot_dir <- NULL
+      }
+      
       groups <- self$past_intensities %>%
         select(starts_with("intensity")) %>%
         names()
@@ -86,7 +106,8 @@ ProphetForecaster <- R6Class("ProphetForecaster", inherit = Forecaster,
       self$forecast <- groups %>%
         map(private$forecast_group,
             past = past, future = future,
-            context_variables = context_variables) %>%
+            context_variables = context_variables,
+            plot_dir = plot_dir) %>%
         reduce(left_join) %>%
         mutate(timestamp = as.numeric(ds) * 1000) %>%
         select(timestamp, starts_with("intensity"))
