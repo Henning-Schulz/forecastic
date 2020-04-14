@@ -56,7 +56,22 @@ ProphetForecaster <- R6Class("ProphetForecaster", inherit = Forecaster,
         mutate(ds = as_datetime(timestamp / 1000)) %>%
         select(-timestamp)
       
+      browser()
+      
+      if (ncol(past %>% select(-ds, -starts_with("intensity"))) == 0) {
+        past_only_context <- tibble(x__ = 0)
+      } else {
+        # adding past contexts that are missing in the future context
+        past_only_context <- setdiff(colnames(self$past_intensities %>% select(-starts_with("intensity"))), colnames(context)) %>%
+          map(~ tibble(!!. := 0)) %>%
+          reduce(bind_cols) %>%
+          mutate(x__ = 0)
+      }
+      
       future <- context %>%
+        mutate(x__ = 0) %>%
+        left_join(past_only_context, by = "x__") %>%
+        select(-x__) %>%
         fill_context(forecast_start, horizon, self$resolution) %>%
         mutate(ds = as_datetime(timestamp / 1000)) %>%
         select(-timestamp)

@@ -58,12 +58,23 @@ TelescopeForecaster <- R6Class("TelescopeForecaster", inherit = Forecaster,
       if (ncol(past_context) == 0) {
         context <- context %>%
           select(timestamp)
+        
+        past_only_context <- tibble(x__ = 0)
       } else {
         context <- context %>%
           select(timestamp, one_of(colnames(past_context)))
+        
+        # adding past contexts that are missing in the future context
+        past_only_context <- setdiff(colnames(self$past_intensities %>% select(-starts_with("intensity"))), colnames(context)) %>%
+          map(~ tibble(!!. := 0)) %>%
+          reduce(bind_cols) %>%
+          mutate(x__ = 0)
       }
       
       filled_context <- context %>%
+        mutate(x__ = 0) %>%
+        left_join(past_only_context, by = "x__") %>%
+        select(-x__) %>%
         fill_context(forecast_start, horizon, self$resolution)
       
       future_context <- filled_context %>%
