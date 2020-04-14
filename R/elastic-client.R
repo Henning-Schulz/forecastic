@@ -34,6 +34,24 @@ read_intensities <- function(app_id, tailoring, perspective = NULL) {
     arrange(timestamp)
 }
 
+#' When used with the elastic client, returns the list of groups.
+#' 
+#' @param app_id The app-id to be used in the query.
+#' @param tailoring the tailoring to be used in the query.
+#' 
+#' @example elastic(cluster_url = "localhost:9200", index = "my_app.all.intensity") %info% list_intensity_groups("my_app", "all")
+list_intensity_groups <- function(app_id, tailoring) {
+  endpoint <- str_c("/", app_id, ".", tailoring, ".intensity/_mapping")
+  
+  process_response <- function(response) {
+    index_mapping <- httr::content(response, as = "parsed")
+    names(index_mapping[[1]]$mappings$properties$intensity$properties)
+  }
+  
+  structure(list("endpoint" = endpoint, "process_response" = process_response),
+            class = c("elastic_info", "elastic_api", "elastic"))
+}
+
 #' Gets the latest timestamp stored in the elasticsearch for the passed app-id and tailoring.
 #' 
 #' @param app_id The app-id to be used in the query.
@@ -41,11 +59,31 @@ read_intensities <- function(app_id, tailoring, perspective = NULL) {
 #' 
 #' @example get_latest_timestamp("my_app", "all")
 get_latest_timestamp <- function(app_id, tailoring) {
-  elastic(cluster_url = str_c("http://", opt$elastic, ":9200"), index = str_c(app_id, ".", tailoring, ".intensity")) %search%
+  client <- elastic(cluster_url = str_c("http://", opt$elastic, ":9200"), index = str_c(app_id, ".", tailoring, ".intensity"))
+  
+  intensity_fields <- client %info%
+    list_intensity_groups(app_id, tailoring) %>%
+    str_c("\"intensity.", ., "\"") %>%
+    paste(collapse = ", ")
+  
+  client %search%
     (
-      query('{
-            "range": { "timestamp": { "gte": 1 } }
-      }', size = 0) +
+      query(sprintf('{
+            "bool": {
+              "filter": [
+                { "range": { "timestamp": { "gte": 1 } } },
+                {
+                  "script": {
+                    "script": {
+                      "source": "for (field in params.fields) { if (doc[field].size() > 0) { return true } } return false",
+                      "params": { "fields": [ %s ] },
+                      "lang": "painless"
+                    }
+                  }
+                }
+              ]
+            }
+      }', intensity_fields), size = 0) +
       aggs('{
            "max_timestamp" : { "max" : { "field" : "timestamp" } }
       }')

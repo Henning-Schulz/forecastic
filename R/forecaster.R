@@ -59,19 +59,20 @@ Forecaster <- R6Class("Forecaster",
       private$logger$info("Using context variables [", paste(context_variables, collapse = ", "), "]")
       
       intensities <- intensities %>%
-        select(timestamp, starts_with("intensity"), one_of(context_variables))
+        select(timestamp, starts_with("intensity"), matches(paste(c(" ", context_variables), collapse = "|")))
       
       # restrict to past and fill intensities
-      start <- intensities %>%
-        summarise(val = min(timestamp))
+      total_intensities <- intensities %>%
+        mutate(intensity = rowSums(select(., starts_with("intensity")), na.rm = T)) %>%
+        filter(intensity > 0)
       
-      end_past <- intensities %>%
-        filter_at(vars(starts_with("intensity")), any_vars(!is.na(.))) %>%
-        summarize(val = max(timestamp))
-      self$end_past <- end_past$val
+      intensity_range <- total_intensities %>%
+        summarise(start = min(timestamp), end = max(timestamp))
+      
+      self$end_past <- intensity_range$end
       
       # replacing all missing values (intensities and context variables) with 0
-      self$past_intensities <- tibble(timestamp = seq(start$val, end_past$val, as.double(resolution))) %>% # as.double prevents integer overflow
+      self$past_intensities <- tibble(timestamp = seq(intensity_range$start, intensity_range$end, as.double(resolution))) %>% # as.double prevents integer overflow
         left_join(intensities, by = "timestamp") %>%
         replace(is.na(.), 0)
       
