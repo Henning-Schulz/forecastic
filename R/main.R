@@ -53,6 +53,8 @@ option_list <- list(
 opt_parser = OptionParser(option_list = option_list)
 opt = parse_args(opt_parser)
 
+message("Running with options ", paste(str_c(names(opt), opt, sep = "="), collapse = ", "))
+
 if (!(opt$telescope_regressor %in% c("XGBoost", "RandomForest", "SVM"))) {
   stop("Unknown telescope regressor (", opt$telescope_regressor, ")! Needs to be one of XGBoost (the default), RandomForest, SVM.")
 }

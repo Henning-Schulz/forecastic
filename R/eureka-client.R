@@ -34,7 +34,7 @@ EurekaClient <- R6Class("EurekaClient", list(
     self$local_port <- as.character(local_port)
     self$cron_cmd <- cron_rscript(rscript = str_c(getwd(), "/R/eureka-heartbeat.R"),
                                   rscript_log = str_c(getwd(), "/logs/eureka-heartbeat.log"),
-                                  rscript_args = str_c("--host ", local_host, " --port ", local_port, " --eureka ", eureka_host))
+                                  rscript_args = str_c("--host ", name, " --port ", local_port, " --eureka ", eureka_host))
     self$cron_id <- str_c("eureka-heartbeat-", local_host, "-", local_port)
   },
   
@@ -70,7 +70,7 @@ EurekaClient <- R6Class("EurekaClient", list(
     
     cron_rm(id = self$cron_id)
     
-    response <- DELETE(url = str_c("http://", self$host, ":8761/eureka/apps/forecastic/", self$local_host, ":forecastic:", self$local_port))
+    response <- DELETE(url = str_c("http://", self$host, ":8761/eureka/apps/forecastic/", self$name, ":forecastic:", self$local_port))
     
     if (response$status_code == 200) {
       self$logger$info("Eureka unregistration successful.")

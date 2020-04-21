@@ -119,6 +119,27 @@ TelescopeForecaster <- R6Class("TelescopeForecaster", inherit = Forecaster,
             plot_dir = plot_dir) %>%
         reduce(left_join)
       
+      if (!is.null(plot_dir)) {
+        tryCatch(
+          {
+            private$logger$info("Storing forecast to ", plot_dir, "/forecast.csv.")
+            write_csv(self$forecast, file.path(plot_dir, "forecast.csv"))
+            
+            p <- self$forecast %>%
+              gather(starts_with("intensity"), key = "group", value = "intensity") %>%
+              mutate(group = str_sub(group, start = 11)) %>%
+              ggplot(aes(x = timestamp, y = intensity, color = group, fill = group)) +
+              geom_area(position = "stack", alpha = 0.3)
+            
+            private$logger$info("Storing overall plot to ", plot_dir, "/overall.pdf.")
+            ggsave(file.path(plot_dir, "overall.pdf"), plot = p, width = 11.35, height = 6.88, units = "in")
+          },
+          error = function(e) {
+            warn(str_c("Error when saving the overall CSV and plot: ", e$message))
+          }
+        )
+      }
+      
       private$logger$info("Forecasting done.")
     }
   )
