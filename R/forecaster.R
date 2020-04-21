@@ -21,7 +21,6 @@ Forecaster <- R6Class("Forecaster",
     end_past = NULL,
     resolution = NULL,
     forecast = NULL,
-    # TODO: plots etc.
     
     #' Creates a new forecaster and initializes the past intensities by querying the elasticsearch.
     #' 
@@ -37,8 +36,14 @@ Forecaster <- R6Class("Forecaster",
       self$app_id <- app_id
       self$tailoring <- tailoring
       
-      # read intensities from elasticsearch
-      intensities <- read_intensities(app_id, tailoring, perspective)
+      intensity_buffer <- IntensityBuffer$new()
+      intensities <- intensity_buffer$load_intensities(app_id, tailoring, perspective)
+      
+      if (is.null(intensities)) {
+        # read intensities from elasticsearch
+        intensities <- read_intensities(app_id, tailoring, perspective)
+        intensity_buffer$store_intensities(app_id, tailoring, perspective, intensities)
+      }
       
       if (forecast_total) {
         private$logger$info("Summing the intensities to a total one.")

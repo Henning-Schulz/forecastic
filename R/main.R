@@ -9,6 +9,7 @@ source("R/logger.R")
 source("R/eureka-client.R")
 source("R/elastic-client.R")
 source("R/forecaster.R")
+source("R/intensity-buffer.R")
 source("R/telescope-forecaster.R")
 source("R/prophet-forecaster.R")
 source("R/perfect-forecaster.R")
@@ -32,7 +33,9 @@ option_list <- list(
   make_option(c("--elastic"), type = "character", default = "localhost",
               help = "The host name or IP of the elasticsearch database."),
   make_option(c("--plotdir"), type = "character", default = FALSE,
-              help = "A directory where to store plots vizualizing the forecasts. Use F for not storing any plots (the default).")
+              help = "A directory where to store plots vizualizing the forecasts. Use F for not storing any plots (the default)."),
+  make_option(c("--buffer"), type = "character", default = FALSE,
+              help = "A directory where to buffer intensities. Use F for disabling the buffer (the default)."),
 )
 
 opt_parser = OptionParser(option_list = option_list)
