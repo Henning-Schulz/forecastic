@@ -38,7 +38,8 @@ TelescopeForecaster <- R6Class("TelescopeForecaster", inherit = Forecaster,
       } else {
         forecast <- telescope.forecast(tvp, horizon = length(future_timestamps), plot = do_plot,
                                        train.covariates = past_context,
-                                       future.covariates = future_context)
+                                       future.covariates = future_context,
+                                       regressor = opt$telescope_regressor)
       }
       
       if (do_plot) {

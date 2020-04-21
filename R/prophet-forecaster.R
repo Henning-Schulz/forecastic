@@ -23,10 +23,13 @@ ProphetForecaster <- R6Class("ProphetForecaster", inherit = Forecaster,
     forecast_group = function(group, past, future, context_variables, plot_dir = NULL) {
       private$logger$info("Forecasting group ", group, "...")
       
-      m <- prophet()
+      yearly_seasonality <- if(opt$force_yearly) T else "auto"
+      
+      m <- prophet(yearly.seasonality = yearly_seasonality, seasonality.mode = opt$seasonality_mode,
+                   seasonality.prior.scale = opt$seasonality_prior_scale)
       
       for (variable in context_variables) {
-        m <- add_regressor(m, variable)
+        m <- add_regressor(m, variable, mode = opt$context_mode, prior.scale = opt$context_prior_scale)
       }
       
       m <- fit.prophet(m, past %>% select(ds, y = !!group, one_of(context_variables)))
@@ -63,8 +66,6 @@ ProphetForecaster <- R6Class("ProphetForecaster", inherit = Forecaster,
       past <- self$past_intensities %>%
         mutate(ds = as_datetime(timestamp / 1000)) %>%
         select(-timestamp)
-      
-      browser()
       
       if (ncol(past %>% select(-ds, -starts_with("intensity"))) == 0) {
         past_only_context <- tibble(x__ = 0)
