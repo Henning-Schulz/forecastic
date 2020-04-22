@@ -62,3 +62,41 @@ function(app_id, tailoring, perspective, ranges, forecast_total, context, contex
   
   result
 }
+
+#' Upload an R snippet as an aggregation
+#' @post /aggregation/<name>
+function(req, res, name, force = F) {
+  force_l <- as.logical(force)
+  
+  if (is.na(force_l)) {
+    res$status <- 400
+    list(error=jsonlite::unbox(str_c("Cannot interpret force=", force)))
+  } else if (name %in% str_sub(list.files("aggregations"), end = -3) && !force_l) {
+    res$status <- 400
+    list(error=jsonlite::unbox("Aggregation already exists! Use ?force=true to overwrite the existing one."))
+  } else {
+    logger$info("Storing new aggregation with name ", name, ".")
+    
+    write_lines(req$postBody, file.path("aggregations", str_c(name, ".R")))
+    list(message=jsonlite::unbox("Aggregation can now be used."))
+  }
+}
+
+#' Upload an R snippet as an adjustment
+#' @post /adjustment/<name>
+function(req, res, name, force = F) {
+  force_l <- as.logical(force)
+  
+  if (is.na(force_l)) {
+    res$status <- 400
+    list(error=jsonlite::unbox(str_c("Cannot interpret force=", force)))
+  } else if (name %in% str_sub(list.files("adjustments"), end = -3) && !force_l) {
+    res$status <- 400
+    list(error=jsonlite::unbox("Adjustment already exists! Use ?force=true to overwrite the existing one."))
+  } else {
+    logger$info("Storing new adjustment with name ", name, ".")
+    
+    write_lines(req$postBody, file.path("adjustments", str_c(name, ".R")))
+    list(message=jsonlite::unbox("Adjustment can now be used."))
+  }
+}

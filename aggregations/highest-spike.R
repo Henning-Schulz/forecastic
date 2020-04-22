@@ -1,4 +1,4 @@
-# sharpest-spike.R
+# highest-spike.R
 
 library(tibbletime)
 library(lubridate)
@@ -18,7 +18,7 @@ do_aggregation <- function(intensities, behavior = NULL, properties = NULL) {
   rolling_window <- as.numeric(window_duration) * 1000 / resolution
   
   if (rolling_window %% 2 == 0) {
-    message("[sharpest-spike.R] Using window size ", (rolling_window + 1), " instead of even size ", rolling_window, ".")
+    message("[highest-spike.R] Using window size ", (rolling_window + 1), " instead of even size ", rolling_window, ".")
     rolling_window <- rolling_window + 1
   }
   
@@ -28,7 +28,17 @@ do_aggregation <- function(intensities, behavior = NULL, properties = NULL) {
     mutate(derivative = rolling_mean - lag(rolling_mean)) %>%
     drop_na()
   
+  changepoint <- prepared %>%
+    filter(rolling_mean == max(rolling_mean)) %>%
+    .$timestamp
+  
+  peak_area_start <- prepared %>%
+    filter(timestamp < changepoint & derivative < 0) %>%
+    summarize(max = max(timestamp)) %>%
+    .$max
+  
   peak_timestamp <- prepared %>%
+    filter(timestamp >= peak_area_start & timestamp <= changepoint) %>%
     filter(derivative == max(derivative)) %>%
     .$timestamp
   
