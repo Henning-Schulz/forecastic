@@ -2,6 +2,7 @@ FROM continuityproject/forecastic-base:0.3.0
 
 COPY R ./R
 COPY aggregations ./aggregations
+COPY adjustments ./adjustments
 COPY resources ./resources
 COPY execute_in_docker.sh ./execute_in_docker.sh
 
